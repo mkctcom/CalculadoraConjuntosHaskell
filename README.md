@@ -1,0 +1,1 @@
+# CalculadoraConjuntosHaskell
