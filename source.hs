@@ -35,14 +35,11 @@ main = do
 		saida2 <- getText entry2
 		let list1 = splitOn "," saida1
 		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
+		let set1 = Set.fromList(list1)
+		let set2 = Set.fromList(list2)
 		let unionSet = Set.union set1 set2
 		let unionList = Set.toList unionSet
-		let stringList = map (show::Int->String) unionList
-		let result = intercalate " " stringList
+		let result = intercalate " " unionList
 		labelSetText label ("União: { " ++ result ++ " }")
 
 	on interButton buttonPressEvent $ tryEvent $ liftIO $ do
@@ -50,73 +47,134 @@ main = do
 		saida2 <- getText entry2
 		let list1 = splitOn "," saida1
 		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
+		let set1 = Set.fromList(list1)
+		let set2 = Set.fromList(list2)
 		let interSet = Set.intersection set1 set2
 		let interList = Set.toList interSet
-		let stringList = map (show::Int->String) interList
-		let result = intercalate " " stringList
+		let result = intercalate " " interList
 		labelSetText label ("Interseção: { " ++ result ++ " }")
 
 	on subButton buttonPressEvent $ tryEvent $ liftIO $ do
 		saida1 <- getText entry
 		saida2 <- getText entry2
-		let list1 = splitOn "," saida1
-		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
-		let boolValue = Set.isSubsetOf set1 set2
-		labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
+		if saida1 == "" && saida2 == ""
+			then do
+				labelSetText label ("É subconjunto? " ++ (boolToString True))
+		else if saida1 == ""
+			then do
+				let list2 = splitOn "," saida2
+				let set1 = Set.empty
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
+		else if saida2 == ""
+			then do
+				let list1 = splitOn "," saida1
+				let set1 = Set.fromList(list1)				
+				let set2 = Set.empty
+				let boolValue = Set.isSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
+		else
+			do
+				let list1 = splitOn "," saida1
+				let list2 = splitOn "," saida2
+				let set1 = Set.fromList(list1)
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))		
 
 	on minusButton buttonPressEvent $ tryEvent $ liftIO $ do
 		saida1 <- getText entry
 		saida2 <- getText entry2
 		let list1 = splitOn "," saida1
 		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
+		let set1 = Set.fromList(list1)
+		let set2 = Set.fromList(list2)
 		let differSet = Set.difference set1 set2
 		let differList = Set.toList differSet
-		let stringList = map (show::Int->String) differList
-		let result = intercalate " " stringList
+		let result = intercalate " " differList
 		labelSetText label ("Diferença: { " ++ result ++ " }")
 	
 	on compButton buttonPressEvent $ tryEvent $ liftIO $ do
 		saida1 <- getText entry
 		saida2 <- getText entry2
-		let list1 = splitOn "," saida1
-		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
-		let boolValue = Set.isSubsetOf set1 set2
-		if boolValue 
+		
+		if saida1 == "" && saida2 == ""
 			then do
-				let compSet = Set.difference set2 set1
-				let compList = Set.toList compSet
-				let stringList = map (show::Int->String) compList
-				let result = intercalate " " stringList
-				labelSetText label ("Complemento: { " ++ result ++ " }")
-		else labelSetText label ("Não é possível calcular o complemento")
+				labelSetText label ("Complemento: {  }")	
+		else if saida1 == ""
+			then do
+				let list2 = splitOn "," saida2
+				let set1 = Set.empty
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isSubsetOf set1 set2
+				
+				if boolValue 
+					then do
+						let compSet = Set.difference set2 set1
+						let compList = Set.toList compSet
+						let result = intercalate " " compList
+						labelSetText label ("Complemento: { " ++ result ++ " }")
+				else labelSetText label ("Complemento: {  }")
+
+		else if saida2 == ""
+			then do
+				let list1 = splitOn "," saida1
+				let set1 = Set.fromList(list1)				
+				let set2 = Set.empty
+				let boolValue = Set.isSubsetOf set1 set2
+				
+				if boolValue 
+					then do
+						let compSet = Set.difference set2 set1
+						let compList = Set.toList compSet
+						let result = intercalate " " compList
+						labelSetText label ("Complemento: { " ++ result ++ " }")
+				else labelSetText label ("Complemento: {  }")
+		else
+			do
+				let list1 = splitOn "," saida1
+				let list2 = splitOn "," saida2
+				let set1 = Set.fromList(list1)
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isSubsetOf set1 set2
+				
+				if boolValue 
+					then do
+						let compSet = Set.difference set2 set1
+						let compList = Set.toList compSet
+						let result = intercalate " " compList
+						labelSetText label ("Complemento: { " ++ result ++ " }")
+				else labelSetText label ("Complemento: {  }")	
 
 	on subpButton buttonPressEvent $ tryEvent $ liftIO $ do
 		saida1 <- getText entry
 		saida2 <- getText entry2
-		let list1 = splitOn "," saida1
-		let list2 = splitOn "," saida2
-		let intList1 = map (read::String->Int) list1
-		let intList2 = map (read::String->Int) list2
-		let set1 = Set.fromList(intList1)
-		let set2 = Set.fromList(intList2)
-		let boolValue = Set.isProperSubsetOf set1 set2
-		labelSetText label ("É subconjunto próprio? " ++ (boolToString boolValue))
+		if saida1 == "" && saida2 == ""
+			then do
+				labelSetText label ("É subconjunto? " ++ (boolToString False))
+		else if saida1 == ""
+			then do
+				let list2 = splitOn "," saida2
+				let set1 = Set.empty
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isProperSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
+		else if saida2 == ""
+			then do
+				let list1 = splitOn "," saida1
+				let set1 = Set.fromList(list1)				
+				let set2 = Set.empty
+				let boolValue = Set.isProperSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
+		else
+			do
+				let list1 = splitOn "," saida1
+				let list2 = splitOn "," saida2
+				let set1 = Set.fromList(list1)
+				let set2 = Set.fromList(list2)
+				let boolValue = Set.isProperSubsetOf set1 set2
+				labelSetText label ("É subconjunto? " ++ (boolToString boolValue))
 
 	widgetShowAll window
  
